@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { io } from "socket.io-client";
 import axios from "axios";
+import socket from "./utils/socket";
 function App() {
   const [inputValue, setInputValue] = useState<string>("");
-  const socket = io("http://localhost:8080");
   const profile = JSON.parse(localStorage.getItem("profile") || "{}");
   useEffect(() => {
     socket.auth = {
       _id: profile?.result?._id,
     };
     socket.connect();
+    socket.on("receive_message", (data) => {
+      console.log(data);
+    });
 
     return () => {
       socket.disconnect();
     };
-  }, [profile?.result?._id, socket]);
+  }, [profile?.result?._id]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -36,9 +38,6 @@ function App() {
         localStorage.setItem("profile", JSON.stringify(res.data));
       })
       .catch((err) => {
-        localStorage.removeItem("profile");
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
         return err;
       });
 
@@ -49,8 +48,10 @@ function App() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setInputValue("");
-    alert("Hello!");
+    socket.emit("send_message", {
+      message: inputValue,
+      receiver: "6742f6cd4a9c7820fd377c61", // user_id
+    });
   };
 
   return (
@@ -60,7 +61,11 @@ function App() {
           <h2 className="text-lg font-bold mb-2">
             Hi {profile.result.name}, Welcome to Chat Form
           </h2>
-          <form onSubmit={(e) => handleSubmit(e)}>
+          <form
+            onSubmit={(e) => {
+              handleSubmit(e);
+            }}
+          >
             <input
               type="text"
               placeholder="Type a message..."
