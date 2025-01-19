@@ -4,6 +4,9 @@ import axios from "axios";
 import socket from "./utils/socket";
 function App() {
   const [inputValue, setInputValue] = useState<string>("");
+  const [messages, setMessages] = useState<
+    { sender_name: string; message: string }[]
+  >([]);
   const profile = JSON.parse(localStorage.getItem("profile") || "{}");
   useEffect(() => {
     socket.auth = {
@@ -11,7 +14,7 @@ function App() {
     };
     socket.connect();
     socket.on("receive_message", (data) => {
-      console.log(data);
+      setMessages((prevMessages) => [...prevMessages, data]);
     });
 
     return () => {
@@ -50,8 +53,10 @@ function App() {
     e.preventDefault();
     socket.emit("send_message", {
       message: inputValue,
+      sender_name: profile?.result?.name,
       receiver: "6742f6cd4a9c7820fd377c61", // user_id
     });
+    setInputValue("");
   };
 
   return (
@@ -61,6 +66,16 @@ function App() {
           <h2 className="text-lg font-bold mb-2">
             Hi {profile.result.name}, Welcome to Chat Form
           </h2>
+          <ul className="space-y-2">
+            {messages.map((message, index) => (
+              <li key={index} className="p-2 bg-gray-200 rounded-lg">
+                <div className="flex flex-col gap-1">
+                  <p className="font-medium">{message.sender_name}</p>
+                  <p className="text-sm">{message.message}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
           <form
             onSubmit={(e) => {
               handleSubmit(e);
