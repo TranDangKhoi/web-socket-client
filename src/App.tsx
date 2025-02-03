@@ -8,8 +8,10 @@ function App() {
   const {profile, setProfile} = useContext(AuthContext);
   const {
     register,
-    handleSubmit: handleLoginSubmit,
-  } = useForm<{email: string; password: string}>();
+    handleSubmit: handleLoginSubmit
+  } = useForm<{email: string; password: string}>({
+    mode: "onSubmit",
+  });
   const [chatInputValue, setChatInputValue] = useState<string>("");
   const [messages, setMessages] = useState<
     { sender_name: string; message: string }[]
@@ -41,22 +43,23 @@ function App() {
       });
       return result;
     }
-
-    fetchUserInfo()
-      .then((res) => {
-        setProfile(res.data.result);
-        localStorage.setItem("profile", JSON.stringify(res.data.result));
-      })
-      .catch((err) => {
-        return err;
-      });
+    if(isLoggedIn){
+      fetchUserInfo()
+        .then((res) => {
+          setProfile(res.data.result);
+          localStorage.setItem("profile", JSON.stringify(res.data.result));
+        })
+        .catch((err) => {
+          return err;
+        });
+    }
 
     return () => {
       controller.abort();
     };
-  }, [setProfile]);
+  }, [isLoggedIn, setProfile]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     socket.emit("send_message", {
       message: chatInputValue,
@@ -66,7 +69,7 @@ function App() {
     setChatInputValue("");
   };
 
-  const handleLogin = async (data) => {
+  const handleLogin = handleLoginSubmit(async (data) => {
     const controller = new AbortController();
     const result = await axios.post("/users/signin", {
       email: data.email,
@@ -76,14 +79,13 @@ function App() {
       signal: controller.signal,
     })
 
-    if (result.status === 200) {
-      localStorage.setItem("access_token", result.data.access_token);
-      localStorage.setItem("refresh_token", result.data.refresh_token);
-      localStorage.setItem("profile", JSON.stringify(result.data.user));
-      setProfile(result.data.user);
+    if (result.status === 201) {
+      localStorage.setItem("access_token", result.data.result.access_token);
+      localStorage.setItem("refresh_token", result.data.result.refresh_token);
+      setIsLoggedIn(true);
     }
     return result;
-  }
+  }) 
 
   return (
     <>
@@ -103,9 +105,7 @@ function App() {
             ))}
           </ul>
           <form
-            onSubmit={(e) => {
-              handleSubmit(e);
-            }}
+            onSubmit={handleSendMessage}
           >
             <input
               type="text"
@@ -125,7 +125,7 @@ function App() {
       ) : (
         <>
           <h1 className="text-xl text-center mt-10">Login first</h1>
-          <form className="mt-4 flex flex-col gap-4 max-w-[500px] mx-auto" onSubmit={handleLoginSubmit(handleLogin)}>
+          <form className="mt-4 flex flex-col gap-4 max-w-[500px] mx-auto" onSubmit={handleLogin}>
             <input
               type="text"
               placeholder="E-mail address"
