@@ -1,34 +1,57 @@
-import { useContext, useEffect, useState } from "react";
-import "./App.css";
 import axios from "axios";
-import socket from "./utils/socket";
+import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import "./App.css";
 import { AuthContext } from "./contexts/auth.contexts";
+import { TPrivateChatMessage } from "./types/chat.types";
+import socket from "./utils/socket";
+
+const USERNAMES_FOR_EXAMPLE = [
+  "user6742f6057066a070230c8677",
+  "user6742f6cd4a9c7820fd377c61",
+];
 function App() {
-  const {profile, setProfile} = useContext(AuthContext);
-  const {
-    register,
-    handleSubmit: handleLoginSubmit
-  } = useForm<{email: string; password: string}>({
+  const { profile, setProfile, isLoggedIn, setIsLoggedIn } =
+    useContext(AuthContext);
+  const { register, handleSubmit: handleLoginSubmit } = useForm<{
+    email: string;
+    password: string;
+  }>({
     mode: "onSubmit",
   });
   const [chatInputValue, setChatInputValue] = useState<string>("");
-  const [messages, setMessages] = useState<
-    { sender_name: string; message: string }[]
-  >([]);
+  const [messages, setMessages] = useState<TPrivateChatMessage[]>([]);
+
   useEffect(() => {
+    if (!profile?._id) return;
+
+    // Update socket auth
     socket.auth = {
-      _id: profile?._id,
+      _id: profile._id,
+      Authorization: "Bearer " + localStorage.getItem("access_token"),
     };
-    socket.connect();
-    socket.on("receive_message", (data) => {
-      setMessages((prevMessages) => [...prevMessages, data]);
-    });
+
+    // Connect only if not connected
+    if (!socket.connected) socket.connect();
+
+    const handleReceiveMessage = (data: TPrivateChatMessage) => {
+      setMessages((prev) => [
+        ...prev,
+        {
+          ...data,
+          isSender: data.sender_name === profile.name,
+        },
+      ]);
+    };
+
+    // Remove old listener and add new
+    socket.off("receive_message", handleReceiveMessage);
+    socket.on("receive_message", handleReceiveMessage);
 
     return () => {
-      socket.disconnect();
+      socket.off("receive_message", handleReceiveMessage);
     };
-  }, [profile?._id]);
+  }, [profile?._id, profile?.name]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -43,7 +66,7 @@ function App() {
       });
       return result;
     }
-    if(isLoggedIn){
+    if (isLoggedIn) {
       fetchUserInfo()
         .then((res) => {
           setProfile(res.data.result);
@@ -71,13 +94,17 @@ function App() {
 
   const handleLogin = handleLoginSubmit(async (data) => {
     const controller = new AbortController();
-    const result = await axios.post("/users/signin", {
-      email: data.email,
-      password: data.password,
-    }, {
-      baseURL: "http://localhost:8080",
-      signal: controller.signal,
-    })
+    const result = await axios.post(
+      "/users/signin",
+      {
+        email: data.email,
+        password: data.password,
+      },
+      {
+        baseURL: "http://localhost:8080",
+        signal: controller.signal,
+      }
+    );
 
     if (result.status === 201) {
       localStorage.setItem("access_token", result.data.result.access_token);
@@ -85,7 +112,7 @@ function App() {
       setIsLoggedIn(true);
     }
     return result;
-  }) 
+  });
 
   return (
     <>
@@ -96,17 +123,22 @@ function App() {
           </h2>
           <ul className="space-y-2">
             {messages.map((message, index) => (
-              <li key={index} className="p-2 bg-gray-200 rounded-lg">
+              <li
+                key={index}
+                className={`p-2 rounded-lg w-32 ${
+                  message.isSender
+                    ? "ml-auto bg-blue-500 text-white"
+                    : "mr-auto bg-gray-200"
+                }`}
+              >
                 <div className="flex flex-col gap-1">
                   <p className="font-medium">{message.sender_name}</p>
-                  <p className="text-sm">{message.message}</p>
+                  <p className={`text-sm`}>{message.message}</p>
                 </div>
               </li>
             ))}
           </ul>
-          <form
-            onSubmit={handleSendMessage}
-          >
+          <form className="my-2" onSubmit={handleSendMessage}>
             <input
               type="text"
               placeholder="Type a message..."
@@ -125,7 +157,10 @@ function App() {
       ) : (
         <>
           <h1 className="text-xl text-center mt-10">Login first</h1>
-          <form className="mt-4 flex flex-col gap-4 max-w-[500px] mx-auto" onSubmit={handleLogin}>
+          <form
+            className="mt-4 flex flex-col gap-4 max-w-[500px] mx-auto"
+            onSubmit={handleLogin}
+          >
             <input
               type="text"
               placeholder="E-mail address"
