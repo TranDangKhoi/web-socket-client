@@ -42,7 +42,7 @@ function App() {
     if (!socket.connected) socket.connect();
 
     const handleReceiveMessage = (data: TPrivateChatMessage) => {
-      console.log("Hello?");
+      console.log("Received");
       setMessages((prev) => [
         ...prev,
         {
@@ -92,16 +92,22 @@ function App() {
 
   const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Send to both the current user and the receiver
     socket.emit("send_message", {
       message: chatInputValue,
       sender_name: profile?.name,
-      receiver: messageReceiverId, // user_id
+      sender_id: profile?._id,
+      receiver_id: messageReceiverId,
     });
-    socket.emit("send_message", {
-      message: chatInputValue,
-      sender_name: profile?.name,
-      receiver: profile?._id, // user_id
-    });
+
+    // socket.emit("send_message", {
+    //   message: chatInputValue,
+    //   sender_name: profile?.name,
+    //   receiver_id: profile?._id, // user_id
+    //   receiver_name: profile?.name,
+    // });
+
     setChatInputValue("");
   };
 
