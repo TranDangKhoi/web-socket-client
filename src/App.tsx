@@ -7,8 +7,14 @@ import { TPrivateChatMessage } from "./types/chat.types";
 import socket from "./utils/socket";
 
 const USERNAMES_FOR_EXAMPLE = [
-  "user6742f6057066a070230c8677",
-  "user6742f6cd4a9c7820fd377c61",
+  {
+    name: "Fern",
+    value: "user6742f6057066a070230c8677",
+  },
+  {
+    name: "Stark",
+    value: "user6742f6cd4a9c7820fd377c61",
+  },
 ];
 function App() {
   const { profile, setProfile, isLoggedIn, setIsLoggedIn } =
@@ -21,6 +27,7 @@ function App() {
   });
   const [chatInputValue, setChatInputValue] = useState<string>("");
   const [messages, setMessages] = useState<TPrivateChatMessage[]>([]);
+  const [messageReceiverId, setMessageReceiverId] = useState<string>("");
 
   useEffect(() => {
     if (!profile?._id) return;
@@ -35,6 +42,7 @@ function App() {
     if (!socket.connected) socket.connect();
 
     const handleReceiveMessage = (data: TPrivateChatMessage) => {
+      console.log("Hello?");
       setMessages((prev) => [
         ...prev,
         {
@@ -87,9 +95,29 @@ function App() {
     socket.emit("send_message", {
       message: chatInputValue,
       sender_name: profile?.name,
-      receiver: "6742f6cd4a9c7820fd377c61", // user_id
+      receiver: messageReceiverId, // user_id
+    });
+    socket.emit("send_message", {
+      message: chatInputValue,
+      sender_name: profile?.name,
+      receiver: profile?._id, // user_id
     });
     setChatInputValue("");
+  };
+
+  const getProfile = async (username: string) => {
+    const result = await axios
+      .get(`/users/${username}`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+        },
+        baseURL: "http://localhost:8080",
+      })
+      .then((res) => {
+        console.log(res);
+        setMessageReceiverId(res.data.user._id);
+      });
+    return result;
   };
 
   const handleLogin = handleLoginSubmit(async (data) => {
@@ -121,6 +149,19 @@ function App() {
           <h2 className="text-lg font-bold mb-2">
             Hi {profile.name}, Welcome to Chat Form
           </h2>
+          <div>
+            {USERNAMES_FOR_EXAMPLE.map((user) => (
+              <button
+                key={user.value}
+                className="block"
+                onClick={() => {
+                  getProfile(user.value);
+                }}
+              >
+                {user.name}
+              </button>
+            ))}
+          </div>
           <ul className="space-y-2">
             {messages.map((message, index) => (
               <li
