@@ -11,9 +11,15 @@ importers:
       '@hookform/resolvers':
         specifier: ^3.10.0
         version: 3.10.0(react-hook-form@7.54.2(react@18.3.1))
+      '@vidstack/react':
+        specifier: ^0.6.15
+        version: 0.6.15(@types/react@18.3.18)(maverick.js@0.37.0)(react@18.3.1)(vidstack@0.6.15)
       axios:
         specifier: ^1.7.9
         version: 1.7.9
+      hls.js:
+        specifier: ^1.6.9
+        version: 1.6.9
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -26,6 +32,9 @@ importers:
       socket.io-client:
         specifier: ^4.8.1
         version: 4.8.1
+      vidstack:
+        specifier: ^0.6.15
+        version: 0.6.15
       yup:
         specifier: ^1.6.1
         version: 1.6.1
@@ -387,6 +396,9 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
+  '@maverick-js/signals@5.11.5':
+    resolution: {integrity: sha512-/GO94awrwN9ROYZDMTeByordjvbhcm3CMvB/2aL/sEUy9Va8nM/2GmNgOOe+rrooTGnz8/DzO73xomuBRrnYWw==}
+
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -576,6 +588,15 @@ packages:
   '@typescript-eslint/visitor-keys@8.18.1':
     resolution: {integrity: sha512-Vj0WLm5/ZsD013YeUKn+K0y8p1M0jPpxOkKdbD1wB0ns53a5piVY02zjf072TblEweAbcYiFiPoSMF3kp+VhhQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@vidstack/react@0.6.15':
+    resolution: {integrity: sha512-S8KkYCte84Pqwb8Zd9vuOCe2YuaXqRdtYQ22zSvDUPlS7m8ilYs6ypfHwZzmgSVZdayVU1C703aFMSdcLfpxpg==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      '@types/react': ^18.0.0
+      maverick.js: 0.37.0
+      react: ^18.0.0
+      vidstack: 0.6.15
 
   '@vitejs/plugin-react@4.3.4':
     resolution: {integrity: sha512-SCCPBJtYLdE8PX/7ZQAs1QAZ8Jqwih+0VBLum1EGqmCCQal+MIUqLCzj3ZUy8ufbC0cAM4LRlSTm7IQJwWT4ug==}
@@ -930,6 +951,9 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
+  hls.js@1.6.9:
+    resolution: {integrity: sha512-q7qPrri6GRwjcNd7EkFCmhiJ6PBIxeUsdxKbquBkQZpg9jAnp6zSAeN9eEWFlOB09J8JfzAQGoXL5ZEAltjO9g==}
+
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
     engines: {node: '>= 4'}
@@ -1032,6 +1056,14 @@ packages:
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
+
+  maverick.js@0.37.0:
+    resolution: {integrity: sha512-1Dk/9rienLiihlktVvH04ADC2UJTMflC1fOMVQCCaQAaz7hgzDI5i0p/arFbDM52hFFiIcq4RdXtYz47SgsLgw==}
+    engines: {node: '>=16'}
+
+  media-captions@0.0.18:
+    resolution: {integrity: sha512-JW18P6FuHdyLSGwC4TQ0kF3WdNj/+wMw2cKOb8BnmY6vSJGtnwJ+vkYj+IjHOV34j3XMc70HDeB/QYKR7E7fuQ==}
+    engines: {node: '>=16'}
 
   merge2@1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
@@ -1355,6 +1387,10 @@ packages:
     resolution: {integrity: sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==}
     engines: {node: '>=12.20'}
 
+  type-fest@3.13.1:
+    resolution: {integrity: sha512-tLq3bSNx+xSpwvAJnzrK0Ep5CLNWjvFTOp71URMaAEWBfRb9nnJiBoUe0tF8bI4ZFO3omgBR6NvnbzVUT3Ly4g==}
+    engines: {node: '>=14.16'}
+
   typescript-eslint@8.18.1:
     resolution: {integrity: sha512-Mlaw6yxuaDEPQvb/2Qwu3/TfgeBHy9iTJ3mTwe7OvpPmF6KPQjVOfGyEJpPv6Ez2C34OODChhXrzYw/9phI0MQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -1378,6 +1414,10 @@ packages:
 
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
+
+  vidstack@0.6.15:
+    resolution: {integrity: sha512-pI2aixBuOpu/LSnRgNJ40tU/KFW+x1X+O2bW1hz946ZZShDM5oqRXF9pavDOuckHAHPgUN9HYUr9vUNTBUPF1Q==}
+    engines: {node: '>=16'}
 
   vite@6.0.5:
     resolution: {integrity: sha512-akD5IAH/ID5imgue2DYhzsEwCi0/4VKY31uhMLEYJwPP4TiUp8pL5PIK+Wo7H8qT8JY9i+pVfPydcFPYD1EL7g==}
@@ -1742,6 +1782,8 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
+  '@maverick-js/signals@5.11.5': {}
+
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
       '@nodelib/fs.stat': 2.0.5
@@ -1928,6 +1970,13 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.18.1
       eslint-visitor-keys: 4.2.0
+
+  '@vidstack/react@0.6.15(@types/react@18.3.18)(maverick.js@0.37.0)(react@18.3.1)(vidstack@0.6.15)':
+    dependencies:
+      '@types/react': 18.3.18
+      maverick.js: 0.37.0
+      react: 18.3.1
+      vidstack: 0.6.15
 
   '@vitejs/plugin-react@4.3.4(vite@6.0.5(jiti@1.21.7)(yaml@2.7.0))':
     dependencies:
@@ -2303,6 +2352,8 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
+  hls.js@1.6.9: {}
+
   ignore@5.3.2: {}
 
   import-fresh@3.3.0:
@@ -2384,6 +2435,13 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
+
+  maverick.js@0.37.0:
+    dependencies:
+      '@maverick-js/signals': 5.11.5
+      type-fest: 3.13.1
+
+  media-captions@0.0.18: {}
 
   merge2@1.4.1: {}
 
@@ -2711,6 +2769,8 @@ snapshots:
 
   type-fest@2.19.0: {}
 
+  type-fest@3.13.1: {}
+
   typescript-eslint@8.18.1(eslint@9.17.0(jiti@1.21.7))(typescript@5.6.3):
     dependencies:
       '@typescript-eslint/eslint-plugin': 8.18.1(@typescript-eslint/parser@8.18.1(eslint@9.17.0(jiti@1.21.7))(typescript@5.6.3))(eslint@9.17.0(jiti@1.21.7))(typescript@5.6.3)
@@ -2734,6 +2794,12 @@ snapshots:
       punycode: 2.3.1
 
   util-deprecate@1.0.2: {}
+
+  vidstack@0.6.15:
+    dependencies:
+      maverick.js: 0.37.0
+      media-captions: 0.0.18
+      type-fest: 3.13.1
 
   vite@6.0.5(jiti@1.21.7)(yaml@2.7.0):
     dependencies:
